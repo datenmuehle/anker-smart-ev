@@ -69,6 +69,11 @@ class AnkerSolixCoordinator(DataUpdateCoordinator):
             data["current_l2"] = regs[7]
             data["current_l3"] = regs[8]
             
+            # Active Power (UINT32)
+            data["power_l1"] = self.hub.decode_uint32(regs[9:11])
+            data["power_l2"] = self.hub.decode_uint32(regs[11:13])
+            data["power_l3"] = self.hub.decode_uint32(regs[13:15])
+            
             # Power (UINT32 at offset 15: 20068)
             data["total_power"] = self.hub.decode_uint32(regs[15:17])
             
