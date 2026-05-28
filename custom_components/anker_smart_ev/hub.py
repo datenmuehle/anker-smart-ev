@@ -1,7 +1,18 @@
 import asyncio
 import logging
 from pymodbus.client import AsyncModbusTcpClient
-from pymodbus.constants import Endian
+
+# Robust Endian import for different pymodbus 3.x versions
+try:
+    from pymodbus.constants import Endian
+except ImportError:
+    try:
+        from pymodbus.framer import Endian
+    except ImportError:
+        # Fallback for very specific 3.x sub-versions
+        class Endian:
+            BIG = "big"
+            LITTLE = "little"
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -53,17 +64,15 @@ class AnkerSolixHub:
 
     def decode_uint32(self, registers):
         """Decode two 16-bit registers into a uint32 (pymodbus 3.11+)."""
+        # pymodbus 3.11+ helper only takes word_order, byte_order is assumed Big
         return self._client.convert_from_registers(
             registers,
             data_type=self._client.DATATYPE.UINT32,
-            word_order=Endian.BIG,
-            byte_order=Endian.BIG
+            word_order=Endian.BIG
         )
 
     def decode_string(self, registers):
         """Decode registers into a string (Manual decode for BIG endian)."""
-        # In Modbus, each register is 16 bits (2 bytes). 
-        # For strings, they are usually packed 2 chars per register.
         s = ""
         for reg in registers:
             s += chr(reg >> 8) + chr(reg & 0xFF)
