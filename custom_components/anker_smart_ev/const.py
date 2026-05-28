@@ -1,6 +1,6 @@
 """Constants for the Anker SOLIX V1 Smart EV Charger integration."""
 
-DOMAIN = "anker_solix_ev"
+DOMAIN = "anker_smart_ev"
 DEFAULT_NAME = "Anker SOLIX EV Charger"
 DEFAULT_PORT = 502
 SCAN_INTERVAL = 30
