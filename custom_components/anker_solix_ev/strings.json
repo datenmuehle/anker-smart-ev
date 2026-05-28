@@ -1,0 +1,17 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "data": {
+          "host": "IP Address",
+          "port": "Port",
+          "name": "Integration Name"
+        },
+        "description": "Enter the connection details for your Anker SOLIX EV Charger."
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect to the charger. Please check the IP and ensure Modbus TCP is enabled in the Anker App."
+    }
+  }
+}

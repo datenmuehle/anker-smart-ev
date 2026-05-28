@@ -1,0 +1,11 @@
+{
+  "domain": "anker_solix_ev",
+  "name": "Anker SOLIX V1 Smart EV Charger",
+  "codeowners": ["@datenmuehle"],
+  "dependencies": [],
+  "documentation": "https://github.com/datenmuehle/ha-anker-solix-ev",
+  "iot_class": "local_polling",
+  "logbook": false,
+  "requirements": ["pymodbus>=3.11"],
+  "version": "1.0.0"
+}
