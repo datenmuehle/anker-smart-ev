@@ -4,6 +4,7 @@
   "codeowners": ["@datenmuehle"],
   "dependencies": [],
   "documentation": "https://github.com/datenmuehle/anker-smart-ev",
+  "config_flow": true,
   "iot_class": "local_polling",
   "logbook": false,
   "requirements": ["pymodbus>=3.11"],
