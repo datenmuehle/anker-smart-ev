@@ -41,7 +41,7 @@ class AnkerSolixHub:
             if not await self.connect():
                 return None
             try:
-                result = await self._client.read_holding_registers(address, count, slave=1)
+                result = await self._client.read_holding_registers(address, count, device_id=1)
                 if result.isError():
                     _LOGGER.error("Modbus error reading address %s: %s", address, result)
                     return None
@@ -56,7 +56,7 @@ class AnkerSolixHub:
             if not await self.connect():
                 return False
             try:
-                result = await self._client.write_register(address, value, slave=1)
+                result = await self._client.write_register(address, value, device_id=1)
                 return not result.isError()
             except Exception as e:
                 _LOGGER.error("Exception writing Modbus address %s: %s", address, e)
