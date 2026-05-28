@@ -10,7 +10,7 @@ Custom integration for the Anker SOLIX V1 Smart EV Charger using Modbus TCP.
   - Set Phase Mode (Auto, Single-Phase, Three-Phase).
 
 ## Installation
-1. Copy the `custom_components/anker_solix_ev` directory to your Home Assistant `config/custom_components/` folder.
+1. Copy the `custom_components/anker_smart_ev` directory to your Home Assistant `config/custom_components/` folder.
 2. Restart Home Assistant.
 3. In the HA UI, go to **Settings** > **Devices & Services** > **Add Integration**.
 4. Search for "Anker SOLIX V1 Smart EV Charger".
