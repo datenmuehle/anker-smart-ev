@@ -1,5 +1,6 @@
 import asyncio
 import sys
+import traceback
 from pymodbus.client import AsyncModbusTcpClient
 
 # Robust Endian import
@@ -18,8 +19,15 @@ async def test_charger(host, port=502):
     
     client = AsyncModbusTcpClient(host, port=port)
     
-    if not await client.connect():
-        print("Error: Could not connect to the charger. Check IP and Modbus TCP settings in the App.")
+    try:
+        connected = await client.connect()
+        if not connected:
+            print(f"FAILED: Could not connect to {host}:{port}.")
+            print("Troubleshooting: Check IP address, ensure phone app has Modbus TCP enabled, and verify no other device is already connected (max 2 clients).")
+            return
+    except Exception as e:
+        print(f"CONNECTION ERROR: {e}")
+        traceback.print_exc()
         return
 
     print("Connected successfully!\n")
@@ -39,22 +47,20 @@ async def test_charger(host, port=502):
 
     try:
         # 1. Read Intrinsic Information
-        # Model Name: 20001 (10 regs)
-        # Serial Number: 20011 (12 regs)
+        print("Reading identification registers [20001-20022]...")
         res_info = await client.read_holding_registers(20001, count=22, device_id=1)
         if not res_info.isError():
             model = decode_string(res_info.registers[0:10])
             serial = decode_string(res_info.registers[10:22])
-            print(f"Model Name:    {model}")
-            print(f"Serial Number: {serial}")
+            print(f"  Model Name:    {model}")
+            print(f"  Serial Number: {serial}")
         else:
-            print("Could not read identification registers.")
+            print(f"  READ ERROR (Info): {res_info}")
+            if hasattr(res_info, 'message'):
+                print(f"  Message: {res_info.message}")
 
+        print("\nReading live data registers [20053-20097]...")
         # 2. Read Live Data
-        # L1 Voltage: 20053 (1 reg, Gain 10)
-        # L1 Current: 20059 (1 reg, Gain 100)
-        # Total Power: 20068 (2 regs, UINT32)
-        # Status: 20097 (1 reg)
         res_live = await client.read_holding_registers(20053, count=45, device_id=1)
         if not res_live.isError():
             regs = res_live.registers
@@ -66,15 +72,16 @@ async def test_charger(host, port=502):
             status_map = {0:"Idle", 1:"Preparing", 2:"Charging", 3:"Paused", 5:"Completed", 8:"Error"}
             status_text = status_map.get(status_code, f"Unknown ({status_code})")
 
-            print(f"L1 Voltage:    {voltage} V")
-            print(f"L1 Current:    {current} A")
-            print(f"Total Power:   {power} W")
-            print(f"Status:        {status_text}")
+            print(f"  L1 Voltage:    {voltage} V")
+            print(f"  L1 Current:    {current} A")
+            print(f"  Total Power:   {power} W")
+            print(f"  Status:        {status_text}")
         else:
-            print("Could not read live data registers.")
+            print(f"  READ ERROR (Live): {res_live}")
 
     except Exception as e:
-        print(f"An unexpected error occurred: {e}")
+        print(f"\nUNEXPECTED ERROR DURING DATA FETCH: {e}")
+        traceback.print_exc()
     finally:
         client.close()
         print("\nDisconnected.")
